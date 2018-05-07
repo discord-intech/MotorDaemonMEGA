@@ -96,16 +96,16 @@ private:
     long maxAcceleration;
     long maxDecceleration;
 
-    volatile double x = 0.0; //mm
-    volatile double y = 0.0; //mm
-    volatile double currentAngle = 0.0; //rads
-    volatile double originAngle = 0.0; //rads
+    volatile float x = 0.0; //mm
+    volatile float y = 0.0; //mm
+    volatile float currentAngle = 0.0; //rads
+    volatile float originAngle = 0.0; //rads
 
     //std::queue<Cinematic> pointsToPass = std::queue<Cinematic>();
 
     //Les ratios de vitesse pour commander un d�placement courbe
-    volatile double leftCurveRatio;
-    volatile double rightCurveRatio;
+    volatile float leftCurveRatio;
+    volatile float rightCurveRatio;
 
     static long startTime;
     static long execTime;
@@ -188,8 +188,8 @@ public:
     void setLeftSpeedTunings(float, float, float);
     void setRightSpeedTunings(float, float, float);
 
-    void setPosition(double xn, double yn) { x = xn; y = yn; }
-    void setAngle(double o) { originAngle = o - currentAngle; }
+    void setPosition(float xn, float yn) { x = xn; y = yn; }
+    void setAngle(float o) { originAngle = o - currentAngle; }
 
     const char* getTunings(void);
 
@@ -216,9 +216,9 @@ public:
     Odometry* getOdometry(void);
     long getCurveRadius(void);
 
-    double getX(void) {return x;}
+    float getX(void) {return x;}
 
-    double getY(void) {return y;}
+    float getY(void) {return y;}
 
     long getSpeed(void) {return maxSpeedTranslation;}
 
@@ -230,7 +230,7 @@ public:
 
     long getCSpeedR(void)  { return rightSpeedSetpoint; }
 
-    double getAngle(void) { return currentAngle;}
+    float getAngle(void) { return currentAngle;}
 
     void rotateColors();
 

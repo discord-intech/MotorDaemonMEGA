@@ -24,13 +24,13 @@ unsigned long Micros(void)
     return micros();
 }
 
-double fastSin( double x )
+float fastSin( float x )
 {
     x = fmod(x + 3.14f, 3.14f * 2) - 3.14f; // restrict x so that -M_PI < x < M_PI
     const float B = 4.0f/3.14f;
     const float C = -4.0f/(3.14f*3.14f);
 
-    double y = B * x + C * x * ABS(x);
+    float y = B * x + C * x * ABS(x);
 
     const float P = 0.225f;
 
@@ -285,14 +285,14 @@ void MotionController::control()
     }
 
     currentDistance = (leftTicks + rightTicks) / 2;
-    currentAngle = fmod((originAngle + TICKS_TO_RAD*(double)(rightTicks - leftTicks)) + 3.14f, 3.14f * 2) - 3.14f;
+    currentAngle = fmod((originAngle + TICKS_TO_RAD*(float)(rightTicks - leftTicks)) + 3.14f, 3.14f * 2) - 3.14f;
 
     if(!currentTrajectory->ended() && moving)
     {
         if(lastWay != currentTrajectory->peekPoint()->way)
         {
             lastWay = currentTrajectory->peekPoint()->way;
-            long dist = (long)((double)(currentDistance - translationSetpoint)*(double)MM_PER_TICK*(lastWay ? 1.0 : -1.0));
+            long dist = (long)((float)(currentDistance - translationSetpoint)*(float)MM_PER_TICK*(lastWay ? 1.0 : -1.0));
             stop();
             orderTranslation(dist);
         }
@@ -311,7 +311,7 @@ void MotionController::control()
     if(controlled) translationPID.compute();
 
     if(controlled && leftCurveRatio != 0 && rightCurveRatio != 0 && currentLeftSpeed > 20 && currentRightSpeed > 20
-       && ABS((double)currentRightSpeed / (double)currentLeftSpeed) - (rightCurveRatio / leftCurveRatio) > 0.01)
+       && ABS((float)currentRightSpeed / (float)currentLeftSpeed) - (rightCurveRatio / leftCurveRatio) > 0.01)
     {
         curvePID.compute();
     }
@@ -322,8 +322,8 @@ void MotionController::control()
 
     if(ABS(curveSetpoint + deltaRadius) < MAX_RADIUS)
     {
-        leftCurveRatio = ((double)ABS(curveSetpoint + deltaRadius)-(RAYON_COD_GAUCHE*((curveSetpoint<0)?-1.0:1.0)))/((double)ABS(curveSetpoint + deltaRadius)+RAYON_COD_DROITE-RAYON_COD_GAUCHE);
-        rightCurveRatio = ((double)ABS(curveSetpoint + deltaRadius)+(RAYON_COD_DROITE*((curveSetpoint<0)?-1.0:1.0)))/((double)ABS(curveSetpoint + deltaRadius)+RAYON_COD_DROITE-RAYON_COD_GAUCHE);
+        leftCurveRatio = ((float)ABS(curveSetpoint + deltaRadius)-(RAYON_COD_GAUCHE*((curveSetpoint<0)?-1.0:1.0)))/((float)ABS(curveSetpoint + deltaRadius)+RAYON_COD_DROITE-RAYON_COD_GAUCHE);
+        rightCurveRatio = ((float)ABS(curveSetpoint + deltaRadius)+(RAYON_COD_DROITE*((curveSetpoint<0)?-1.0:1.0)))/((float)ABS(curveSetpoint + deltaRadius)+RAYON_COD_DROITE-RAYON_COD_GAUCHE);
     }
     else
     {
@@ -562,8 +562,8 @@ void MotionController::manageStop()
 void MotionController::updatePosition()
 {
     static long precedentL(0);
-    x += (currentDistance - precedentL)*(double)sin(1.57f - (float)currentAngle)*MM_PER_TICK;
-    y += (currentDistance - precedentL)*(double)sin((float)currentAngle)*MM_PER_TICK;
+    x += (currentDistance - precedentL)*(float)sin(1.57f - (float)currentAngle)*MM_PER_TICK;
+    y += (currentDistance - precedentL)*(float)sin((float)currentAngle)*MM_PER_TICK;
     precedentL = currentDistance;
 }
 
@@ -593,14 +593,14 @@ bool MotionController::isPhysicallyStopped() {
 
 const char * MotionController::getTunings(void)
 {
-    char buffer[2048];
-    snprintf(buffer, 2048,"LM : %e %e %e\nRM : %e %e %e\nT : %e %e %e\nC : %e %e %e",
-                   leftSpeedPID.getKp(), leftSpeedPID.getKi(), leftSpeedPID.getKd(),
-                   rightSpeedPID.getKp(), rightSpeedPID.getKi(), rightSpeedPID.getKd(),
-                   translationPID.getKp(), translationPID.getKi(), translationPID.getKd(),
-                   curvePID.getKp(), curvePID.getKi(), curvePID.getKd()
-    );
-    return buffer;
+//    char buffer[2048];
+//    snprintf(buffer, 2048,"LM : %e %e %e\nRM : %e %e %e\nT : %e %e %e\nC : %e %e %e",
+//                   leftSpeedPID.getKp(), leftSpeedPID.getKi(), leftSpeedPID.getKd(),
+//                   rightSpeedPID.getKp(), rightSpeedPID.getKi(), rightSpeedPID.getKd(),
+//                   translationPID.getKp(), translationPID.getKi(), translationPID.getKd(),
+//                   curvePID.getKp(), curvePID.getKi(), curvePID.getKd()
+//    );
+//    return buffer;
 }
 
 void MotionController::setTranslationTunings(float kp, float ki, float kd)
@@ -636,7 +636,7 @@ void MotionController::orderTranslation(long mmDistance)
         moving = true;
         controlled = true;
     }
-    translationSetpoint += (long) ((double)mmDistance / (double)MM_PER_TICK);
+    translationSetpoint += (long) ((float)mmDistance / (float)MM_PER_TICK);
     this->ampOverload = false;
 }
 
