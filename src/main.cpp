@@ -163,7 +163,7 @@ void loop()
     if(Serial.available() > 0)
     {
         int c = Serial.read();
-
+        
         if(c == 13)
         {
             buffer[pos++] = '\0';

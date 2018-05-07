@@ -159,7 +159,7 @@ void MotionController::handleAsservSwitch()
 void MotionController::handleAsservSoft()
 {
     stopAsservSoft = digitalRead(PIN_INTERUPT_ASSERV) <= 0;
-    digitalWrite(ORANGE_LED_PIN, stopAsservSoft ? HIGH : LOW);
+    //digitalWrite(ORANGE_LED_PIN, stopAsservSoft ? HIGH : LOW);
     if(stopAsservSoft) neonSpeed = 0;
 }
 
@@ -195,9 +195,9 @@ void MotionController::rotateColors()
         neonR += neonSpeed;
     }
 
-    neonR = MIN((unsigned char)255, MAX((unsigned char)0, neonR));
-    neonG = MIN((unsigned char)255, MAX((unsigned char)0, neonG));
-    neonB = MIN((unsigned char)255, MAX((unsigned char)0, neonB));
+    neonR = MIN((unsigned char)170, MAX((unsigned char)0, neonR));
+    neonG = MIN((unsigned char)170, MAX((unsigned char)0, neonG));
+    neonB = MIN((unsigned char)170, MAX((unsigned char)0, neonB));
 
     analogWrite(NEON_BLUE_PIN, neonB);
     analogWrite(NEON_GREEN_PIN, neonG);
