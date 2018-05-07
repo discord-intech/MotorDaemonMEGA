@@ -40,11 +40,11 @@ https://github.com/akira215/SoftHalfDuplexSerial-for-Arduino
 //
 // Includes
 //
-#include <SoftHalfDuplexSerial.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <Arduino.h>
 #include <util/delay_basic.h>
+#include "SoftHalfDuplexSerial.h"
 
 //
 // Statics

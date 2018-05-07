@@ -8,6 +8,7 @@
 
 long MotionController::startTime;
 long MotionController::execTime;
+volatile unsigned char MotionController::neonSpeed;
 volatile bool MotionController::stopAsservPhy;
 volatile bool MotionController::stopAsservSoft;
 volatile unsigned int MotionController::count=0;
@@ -159,10 +160,24 @@ void MotionController::handleAsservSoft()
 {
     stopAsservSoft = digitalRead(PIN_INTERUPT_ASSERV) <= 0;
     digitalWrite(ORANGE_LED_PIN, stopAsservSoft ? HIGH : LOW);
+    if(stopAsservSoft) neonSpeed = 0;
 }
 
 void MotionController::rotateColors()
 {
+
+    if(neonSpeed <= 0)
+    {
+        neonR = 0;
+        neonG = 0;
+        neonB = 0;
+
+        analogWrite(NEON_BLUE_PIN, neonB);
+        analogWrite(NEON_GREEN_PIN, neonG);
+        analogWrite(NEON_RED_PIN, neonR);
+
+        return;
+    }
 
     if(neonR > 0 && neonG >= 0 && neonB == 0)
     {
@@ -385,11 +400,11 @@ void MotionController::control()
 
     if(servoMotor && ABS(curveSetpoint + deltaRadius) >= MAX_RADIUS)
     {
-        direction.setAngle(((curveSetpoint + deltaRadius) > 0 ? 1.0 : -1.0)*direction_table[MAX_RADIUS-1]);
+        direction.setAngle(((curveSetpoint + deltaRadius) > 0 ? 1.0 : -1.0)*((float) ((1.5707 - atan((float)(MAX_RADIUS-1) / (float)DIST_MOTOR_DIRECTION)))));
     }
     else if(servoMotor)
     {
-        direction.setAngle(((curveSetpoint + deltaRadius) > 0 ? 1.0 : -1.0)*direction_table[ABS(curveSetpoint + deltaRadius)]);
+        direction.setAngle(((curveSetpoint + deltaRadius) > 0 ? 1.0 : -1.0)*((float) ((1.5707 - atan((float)(ABS(curveSetpoint + deltaRadius)) / (float)DIST_MOTOR_DIRECTION)))));
     }
 
     //direction.setAngle( ((*curveSetpoint + *deltaRadius)>0 ? 1.0 : -1.0)
@@ -566,10 +581,10 @@ void MotionController::stopSweep(void)
 
 void MotionController::compute_direction_table(void)
 {
-    for(int i=0 ; i<MAX_RADIUS ; i++)
-    {
-        direction_table[i] = (float) ((1.5707 - atan((float)i / (float)DIST_MOTOR_DIRECTION)));
-    }
+//    for(int i=0 ; i<MAX_RADIUS ; i++)
+//    {
+//        direction_table[i] = (float) ((1.5707 - atan((float)i / (float)DIST_MOTOR_DIRECTION)));
+//    }
 }
 
 bool MotionController::isPhysicallyStopped() {
@@ -670,7 +685,7 @@ void MotionController::setTrajectory(volatile Trajectory* traj)
 
 void MotionController::sendStatus()
 {
-    char *serialized_string = (char*)malloc(1024*sizeof(char));
+    char *serialized_string = (char*)malloc(256*sizeof(char));
     JSON_Value *root_value = json_value_init_object();
     JSON_Object *root_object = json_value_get_object(root_value);
     json_object_set_number(root_object, "x", this->getX());
@@ -686,7 +701,7 @@ void MotionController::sendStatus()
     json_object_set_boolean(root_object, "stopSoft", this->stopAsservSoft);
     json_object_set_boolean(root_object, "ampOverload", this->ampOverload);
 
-    json_serialize_to_buffer(root_value, serialized_string, 1024*sizeof(char));
+    json_serialize_to_buffer(root_value, serialized_string, 256*sizeof(char));
 
     Serial.write((uint8_t)STATUS_CODE_1);
     Serial.write((uint8_t)STATUS_CODE_2);

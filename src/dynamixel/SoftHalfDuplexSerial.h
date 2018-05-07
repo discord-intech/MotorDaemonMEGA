@@ -34,7 +34,7 @@ https://github.com/akira215/SoftHalfDuplexSerial-for-Arduino
 #define SoftHalfDuplexSerial_h
 
 #if !defined (__SAM3X8E__)
-#include <HalfDuplexSerial.h>
+#include "HalfDuplexSerial.h"
 #include <inttypes.h>
 #include <Stream.h>
 

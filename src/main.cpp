@@ -2,7 +2,6 @@
 #include <lib/parson.h>
 #include "MotionController.hpp"
 
-
 #define RESULT_CODE_1 19
 #define RESULT_CODE_2 20
 
@@ -21,8 +20,8 @@ void orderHandler()
 {
     char* order = strtok(buffer, " ");
 
-    char content[1000];
-    memset(&content, 0, 1000);
+    char content[200];
+    memset(&content, 0, 200);
     int resultCode = 0;
 
     if(!strcmp(order, "d"))
@@ -111,17 +110,17 @@ void orderHandler()
     else
     {
         resultCode = 1;
-        snprintf(content, 1000, "Bad order : %s", order);
+        snprintf(content, 200, "Bad order : %s", order);
     }
 
     if(resultCode == 0)
     {
-        snprintf(content, 1000, "Command executed successfully %s", order);
+        snprintf(content, 200, "Command executed successfully %s", order);
     }
 
     free(buffer);
-    buffer = (char*)malloc(4096 * sizeof(char));
-    memset(buffer, 0, 4096);
+    buffer = (char*)malloc(256 * sizeof(char));
+    memset(buffer, 0, 256);
     pos = 0;
     JSON_Value *root_value = json_value_init_object();
     JSON_Object *root_object = json_value_get_object(root_value);
@@ -149,9 +148,13 @@ void setup()
 
     motion->init();
 
-    Timer5.attachInterrupt(motionControllerWrapper).setFrequency(1000).start();
+    //Timer1.attachInterrupt(motionControllerWrapper).setFrequency(1000).start();
+
+    Timer3.initialize(1000);
+    Timer3.attachInterrupt(motionControllerWrapper);
 
     while(Serial.available() > 0) Serial.read(); // Cleaning the input buffer
+
 }
 
 void loop()
@@ -172,4 +175,5 @@ void loop()
         }
 
     }
+
 }

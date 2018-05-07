@@ -3,10 +3,7 @@
 //
 
 #include <stdlib.h>
-#include <iostream>
-#include <wiring_digital.h>
 #include <wiring_private.h>
-#include <wiring_analog.h>
 #include "Motor.hpp"
 #include <Arduino.h>
 

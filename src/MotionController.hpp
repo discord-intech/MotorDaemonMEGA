@@ -13,8 +13,7 @@
 #include "Servo.hpp"
 #include "lib/Cinematic.hpp"
 #include "lib/Trajectory.hpp"
-#include "lib/DueTimer.h"
-
+#include "lib/Timer3/TimerThree.h"
 
 #define AVERAGE_SPEED_SIZE	25
 
@@ -140,7 +139,7 @@ private:
 
     unsigned int delayToStop;  //En ms
 
-    volatile float direction_table[MAX_RADIUS];
+    //volatile float direction_table[MAX_RADIUS];
 
     volatile Trajectory* currentTrajectory = new Trajectory(0,0);
 
@@ -156,7 +155,7 @@ private:
     volatile unsigned char neonR;
     volatile unsigned char neonG;
     volatile unsigned char neonB;
-    volatile unsigned char neonSpeed;
+    volatile static unsigned char neonSpeed;
 
 public:
 

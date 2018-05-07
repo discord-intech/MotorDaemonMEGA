@@ -6,7 +6,6 @@
 #define MOTORDAEMONSAM3X_TRAJECTORY_H
 
 #include "Cinematic.hpp"
-#include "../../../../.platformio/packages/toolchain-gccarmnoneeabi/arm-none-eabi/include/malloc.h"
 
 class Trajectory
 {
