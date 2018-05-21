@@ -34,7 +34,7 @@ void motionControllerWrapper()
 
     motion->mainHandler();
 
-    if(count++ % 100 == 0)
+    if(count++ % 50 == 0)
     {
         write_responses();
     }
@@ -217,7 +217,7 @@ void setup()
 
     //Timer1.attachInterrupt(motionControllerWrapper).setFrequency(1000).start();
 
-    Timer3.initialize(1000);
+    Timer3.initialize(2000);
     Timer3.attachInterrupt(motionControllerWrapper);
 
     buffer = (char*)malloc(256 * sizeof(char));

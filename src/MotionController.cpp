@@ -151,7 +151,7 @@ void MotionController::mainHandler()
         handleAsservSoft();
     }
 
-    if(count % 500 == 0)
+    if(count % 250 == 0)
     {
         this->sendStatus();
         this->direction.setLed(led);
