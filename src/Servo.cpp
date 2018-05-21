@@ -30,3 +30,8 @@ void Servo::setAngle(double angle)
 
 
 }
+
+void Servo::setLed(bool b)
+{
+    ax12.setLedEnable(id, b);
+}

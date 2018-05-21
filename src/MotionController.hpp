@@ -31,8 +31,8 @@
 
 #define AX12_ID 42
 
-#define LOW_ANGLE (-0.79)
-#define HIGH_ANGLE 0.79 //TODO Bounds
+#define LOW_ANGLE (-0.27)
+#define HIGH_ANGLE 0.27 //TODO Bounds
 
 #define DELTA_FREQ_REFRESH 500
 

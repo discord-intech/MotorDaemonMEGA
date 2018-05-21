@@ -23,10 +23,10 @@ Odometry::Odometry()
     Odometry::valueAR = 0;
     Odometry::valueBR = 0;
 
-    //attachInterrupt(digitalPinToInterrupt(CHAN_AL), Odometry::onTickChanALeft, CHANGE);
-    //attachInterrupt(digitalPinToInterrupt(CHAN_BL), Odometry::onTickChanBLeft, CHANGE);
-    //attachInterrupt(digitalPinToInterrupt(CHAN_AR), Odometry::onTickChanARight, CHANGE);
-    //attachInterrupt(digitalPinToInterrupt(CHAN_BR), Odometry::onTickChanBRight, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHAN_AL), Odometry::onTickChanALeft, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHAN_BL), Odometry::onTickChanBLeft, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHAN_AR), Odometry::onTickChanARight, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHAN_BR), Odometry::onTickChanBRight, CHANGE);
 
 
 }
@@ -45,7 +45,7 @@ void Odometry::onTickChanALeft(void)
     valueAL = digitalRead(CHAN_AL);
     if(valueAL == valueBL)
     {
-        ++leftTicks;
+        --leftTicks;
     }
 }
 
@@ -54,7 +54,7 @@ void Odometry::onTickChanBLeft(void)
     valueBL = digitalRead(CHAN_BL);
     if(valueAL == valueBL)
     {
-        --leftTicks;
+        ++leftTicks;
     }
 }
 

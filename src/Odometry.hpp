@@ -7,10 +7,10 @@
 
 #include <Arduino.h>
 
-#define CHAN_AL 22
-#define CHAN_BL 23
-#define CHAN_AR 24
-#define CHAN_BR 25
+#define CHAN_AL 18
+#define CHAN_BL 19
+#define CHAN_AR 20
+#define CHAN_BR 21
 
 
 class Odometry {

@@ -1,6 +1,7 @@
 
 #include <lib/parson.h>
 #include "MotionController.hpp"
+#include "lib/LinkedResponseList.h"
 
 #define RESULT_CODE_1 19
 #define RESULT_CODE_2 20
@@ -8,12 +9,35 @@
 
 MotionController* motion;
 
+LinkedResponseList* responses = nullptr;
+
 char *buffer;
 volatile unsigned short pos = 0;
 
+void write_responses()
+{
+    LinkedResponseList* current = responses;
+
+    while (current)
+    {
+        Serial.write((uint8_t)RESULT_CODE_1);
+        Serial.write((uint8_t)RESULT_CODE_2);
+        Serial.print(current->data);
+        for(int i = 0 ; i<5 ; i++) Serial.write((uint8_t)13);
+        current = current->next;
+    }
+}
+
 void motionControllerWrapper()
 {
+    static unsigned int count = 0;
+
     motion->mainHandler();
+
+    if(count++ % 100 == 0)
+    {
+        write_responses();
+    }
 }
 
 void orderHandler()
@@ -28,6 +52,39 @@ void orderHandler()
     {
         char* d = strtok(nullptr, " ");
         motion->orderTranslation(strtol(d, nullptr, 10));
+    }
+    else if(!strcmp(order, "ack"))
+    {
+        unsigned int id = static_cast<unsigned int>(strtol(strtok(nullptr, " "), nullptr, 10));
+
+        if(responses)
+        {
+            LinkedResponseList* current = responses;
+            LinkedResponseList* precedent = nullptr;
+
+            while (current)
+            {
+                if(id == current->resultID)
+                {
+                    if(precedent)
+                    {
+                        precedent->next = current->next;
+                    }
+                    else
+                    {
+                        responses = current->next;
+                    }
+
+                    json_free_serialized_string(current->data);
+                    current->next = nullptr;
+                    free(current);
+                    return;
+                }
+                precedent = current;
+                current = current->next;
+            }
+        }
+
     }
     else if(!strcmp(order, "stop"))
     {
@@ -122,23 +179,30 @@ void orderHandler()
     buffer = (char*)malloc(256 * sizeof(char));
     memset(buffer, 0, 256);
     pos = 0;
+    unsigned int resID = responses ? responses->resultID + 1 : 0;
     JSON_Value *root_value = json_value_init_object();
     JSON_Object *root_object = json_value_get_object(root_value);
     json_object_set_number(root_object, "code", resultCode);
+    json_object_set_number(root_object, "id", resID);
     json_object_set_string(root_object, "content", (const char*)&content);
 
     char *serialized_string = json_serialize_to_string(root_value);
 
-    Serial.write((uint8_t)RESULT_CODE_1);
-    Serial.write((uint8_t)RESULT_CODE_2);
-    Serial.print(serialized_string);
-    Serial.write((uint8_t)13);
-//    Serial.flush();
+    LinkedResponseList* res = static_cast<LinkedResponseList *>(malloc(sizeof(LinkedResponseList)));
+    res->resultID = resID;
+    res->data = serialized_string;
+    res->next = responses;
 
-    json_free_serialized_string(serialized_string);
+//    Serial.write((uint8_t)RESULT_CODE_1);
+//    Serial.write((uint8_t)RESULT_CODE_2);
+//    Serial.print(serialized_string);
+//    for(int i = 0 ; i<5 ; i++) Serial.write((uint8_t)13);
+//
+//    json_free_serialized_string(serialized_string);
     json_value_free(root_value);
-}
 
+    write_responses();
+}
 
 void setup()
 {
@@ -148,10 +212,16 @@ void setup()
 
     motion->init();
 
+    responses = static_cast<LinkedResponseList *>(malloc(sizeof(LinkedResponseList)));
+    responses->resultID = 0;
+
     //Timer1.attachInterrupt(motionControllerWrapper).setFrequency(1000).start();
 
     Timer3.initialize(1000);
     Timer3.attachInterrupt(motionControllerWrapper);
+
+    buffer = (char*)malloc(256 * sizeof(char));
+    memset(buffer, 0, 256);
 
     while(Serial.available() > 0) Serial.read(); // Cleaning the input buffer
 
@@ -163,6 +233,8 @@ void loop()
     if(Serial.available() > 0)
     {
         int c = Serial.read();
+
+        //Serial.println('a');
         
         if(c == 13)
         {

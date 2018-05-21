@@ -37,7 +37,7 @@ float fastSin( float x )
     return P * (y * ABS(y) - y) + y;
 }
 
-MotionController::MotionController() :  rightMotor(), leftMotor(), direction(1650000, LOW_ANGLE, 2050000, HIGH_ANGLE, AX12_ID), //FIXME bounds
+MotionController::MotionController() :  rightMotor(), leftMotor(), direction(461, LOW_ANGLE, 563, HIGH_ANGLE, AX12_ID), //FIXME bounds
 rightSpeedPID(), leftSpeedPID(), translationPID(), curvePID(),
 averageLeftSpeed(), averageRightSpeed(), odo()
 {
@@ -116,20 +116,24 @@ void MotionController::init()
     pinMode(NEON_GREEN_PIN, OUTPUT);
     pinMode(NEON_RED_PIN, OUTPUT);
 
+    pinMode(PIN_SWITCH_ASSERV, INPUT);
+    pinMode(PIN_INTERUPT_ASSERV, INPUT);
+
     analogWrite(NEON_BLUE_PIN, 0);
     analogWrite(NEON_GREEN_PIN, 0);
     analogWrite(NEON_RED_PIN, 255);
 
-    //stopAsservPhy = digitalRead(PIN_SWITCH_ASSERV) <= 0;
+    stopAsservPhy = digitalRead(PIN_SWITCH_ASSERV) <= 0;
     stopAsservSoft = digitalRead(PIN_INTERUPT_ASSERV) <= 0;
 
 
-    //FIXME attachInterrupt(digitalPinToInterrupt(PIN_SWITCH_ASSERV), MotionController::handleAsservSwitch, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(PIN_INTERUPT_ASSERV), MotionController::handleAsservSoft, CHANGE);
+    //attachInterrupt(digitalPinToInterrupt(PIN_SWITCH_ASSERV), MotionController::handleAsservSwitch, CHANGE);
+    //attachInterrupt(digitalPinToInterrupt(PIN_INTERUPT_ASSERV), MotionController::handleAsservSoft, CHANGE);
 }
 
 void MotionController::mainHandler()
 {
+    static bool led = true;
     this->control();
     count++;
 
@@ -142,11 +146,16 @@ void MotionController::mainHandler()
     {
         this->updatePosition();
         this->rotateColors();
+
+       // handleAsservSwitch();
+        handleAsservSoft();
     }
 
     if(count % 500 == 0)
     {
         this->sendStatus();
+        this->direction.setLed(led);
+        led = !led;
     }
 
 }
@@ -160,24 +169,24 @@ void MotionController::handleAsservSoft()
 {
     stopAsservSoft = digitalRead(PIN_INTERUPT_ASSERV) <= 0;
     //digitalWrite(ORANGE_LED_PIN, stopAsservSoft ? HIGH : LOW);
-    if(stopAsservSoft) neonSpeed = 0;
+    //if(stopAsservSoft) neonSpeed = 0;
 }
 
 void MotionController::rotateColors()
 {
 
-    if(neonSpeed <= 0)
-    {
-        neonR = 0;
-        neonG = 0;
-        neonB = 0;
-
-        analogWrite(NEON_BLUE_PIN, neonB);
-        analogWrite(NEON_GREEN_PIN, neonG);
-        analogWrite(NEON_RED_PIN, neonR);
-
-        return;
-    }
+//    if(neonSpeed <= 0)
+//    {
+//        neonR = 0;
+//        neonG = 0;
+//        neonB = 0;
+//
+//        analogWrite(NEON_BLUE_PIN, neonB);
+//        analogWrite(NEON_GREEN_PIN, neonG);
+//        analogWrite(NEON_RED_PIN, neonR);
+//
+//        return;
+//    }
 
     if(neonR > 0 && neonG >= 0 && neonB == 0)
     {
@@ -195,9 +204,9 @@ void MotionController::rotateColors()
         neonR += neonSpeed;
     }
 
-    neonR = MIN((unsigned char)170, MAX((unsigned char)0, neonR));
-    neonG = MIN((unsigned char)170, MAX((unsigned char)0, neonG));
-    neonB = MIN((unsigned char)170, MAX((unsigned char)0, neonB));
+    neonR = MIN((unsigned char)255, MAX((unsigned char)0, neonR));
+    neonG = MIN((unsigned char)255, MAX((unsigned char)0, neonG));
+    neonB = MIN((unsigned char)255, MAX((unsigned char)0, neonB));
 
     analogWrite(NEON_BLUE_PIN, neonB);
     analogWrite(NEON_GREEN_PIN, neonG);
@@ -207,11 +216,11 @@ void MotionController::rotateColors()
 
 void MotionController::control()
 {
-    if(stopAsservPhy || stopAsservSoft)
-    {
-        stop();
-        return;
-    }
+//    if(/*stopAsservPhy ||*/ stopAsservSoft)
+//    {
+//        stop();
+//        return;
+//    }
 
 //    static long freq(0);
 
@@ -483,11 +492,11 @@ void MotionController::manageStop()
         }
     }
 
-    if(moving /*&&  AMP CALCULUS */ )
-    {
-        stop();
-        this->ampOverload = true;
-    }
+//    if(moving /*&&  AMP CALCULUS */ )
+//    {
+//        stop();
+//        this->ampOverload = true;
+//    }
 
     /*else if(moving && !isSpeedEstablished && !forcedMovement && curveMovement){ // V�rifie que le ratio reste bon pdt les traj courbes
 
@@ -706,7 +715,7 @@ void MotionController::sendStatus()
     Serial.write((uint8_t)STATUS_CODE_1);
     Serial.write((uint8_t)STATUS_CODE_2);
     Serial.write(serialized_string, strlen(serialized_string));
-    Serial.write((uint8_t)13);
+    for(int i = 0 ; i<5 ; i++) Serial.write((uint8_t)13);
     //Serial.write((char*)(&buffer), (size_t)(1024));
 
     free(serialized_string);

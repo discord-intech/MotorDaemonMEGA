@@ -19,6 +19,8 @@ public:
 
     void setAngle(double);
 
+    void setLed(bool b);
+
 private:
 
     dxlAx ax12;
