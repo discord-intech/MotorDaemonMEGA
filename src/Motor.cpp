@@ -58,14 +58,7 @@ void Motor::initPWM()
 {
     setDirection(Direction::FORWARD);
 
-    if(invertedPWM)
-    {
-        analogWrite(PWMpin, HIGH);
-    }
-    else
-    {
-        analogWrite(PWMpin, LOW);
-    }
+    analogWrite(PWMpin, LOW);
 
 }
 

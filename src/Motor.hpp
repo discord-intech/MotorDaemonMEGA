@@ -48,8 +48,6 @@
 
         bool inversed;
 
-        bool invertedPWM;
-
         Direction actualDirection;
         int actualDuty;
         void setDirection(Direction);
