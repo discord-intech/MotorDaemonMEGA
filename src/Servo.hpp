@@ -7,7 +7,7 @@
 
 #define SERVO_PWM_TIME_PERIOD 20*1000*1000  // nanosec
 
-#include <dynamixel/DynamixelAx.h>
+#include "DynamixelSerial2/DynamixelSerial2.h"
 #include "Motor.hpp"
 
 class Servo
@@ -23,7 +23,6 @@ public:
 
 private:
 
-    dxlAx ax12;
     char id;
     float lowerBound;
     float lowerAngle;

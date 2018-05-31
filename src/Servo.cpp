@@ -7,16 +7,15 @@
 
 
 Servo::Servo(float lowB, float lowA, float upB, float upA, char id) : lowerBound(lowB), upperBound(upB),
-                                                                      lowerAngle(lowA), upperAngle(upA), id(id), ax12(&hdSerial2)
+                                                                      lowerAngle(lowA), upperAngle(upA), id(id)
 {}
 
 void Servo::initAx(void)
 {
-    ax12.begin(9600);
-    ax12.setStatusReturnLevel(id, 0);
-    ax12.setMovingSpeed(id, 1023);
-    ax12.setMaxTorque(id, 1023);
-    ax12.setGoalPosition(id, 512);
+    Dynamixel.begin(9600);
+    Dynamixel.setSRL(id, 0);
+    Dynamixel.setMaxTorque(id, 1023);
+    Dynamixel.moveSpeed(id, 512, 1023);
 }
 
 void Servo::setAngle(double angle)
@@ -26,12 +25,12 @@ void Servo::setAngle(double angle)
     if(angle > upperAngle) angle = upperAngle;
 
     int16_t value = (int16_t) ((upperBound - lowerBound) / (upperAngle - lowerAngle) * (angle + ABS(lowerAngle)) + lowerBound);
-    ax12.setGoalPosition(id, value);
+    Dynamixel.moveSpeed(id, value, 1023);
 
 
 }
 
 void Servo::setLed(bool b)
 {
-    ax12.setLedEnable(id, b);
+    Dynamixel.ledStatus(id, b);
 }
