@@ -189,18 +189,18 @@ size_t hardHalfDuplexSerial::write(const uint8_t* buffer,  int size)
 
 #ifdef HAVE_HWSERIAL1
   #if defined(UART1_TX_vect)
-    ISR(UART1_TX_vect)
+    //ISR(UART1_TX_vect)
   #elif defined(USART1_TX_vect)
-    ISR(USART1_TX_vect)
+    //ISR(USART1_TX_vect)
   #else
     #error "Don't know what the Transmit Complete vector is called for Serial1"
   #endif
-  {
-    hdSerial1._tx_complete_irq();
-  }
+  //{
+    //hdSerial1._tx_complete_irq();
+  //}
 
   // Creating the instance of the class for serial1
-  hardHalfDuplexSerial hdSerial1(&Serial1, &UCSR1B );
+  ////TXhardHalfDuplexSerial hdSerial1(&Serial1, &UCSR1B );
 #endif // HAVE_HWSERIAL1
 
 #ifdef HAVE_HWSERIAL2

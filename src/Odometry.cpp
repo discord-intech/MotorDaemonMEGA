@@ -18,16 +18,17 @@ Odometry::Odometry()
 
     Odometry::leftTicks = 0;
     Odometry::rightTicks = 0;
-    Odometry::valueAL = 0;
-    Odometry::valueBL = 0;
-    Odometry::valueAR = 0;
-    Odometry::valueBR = 0;
+
+
+    Odometry::valueAL = digitalRead(CHAN_AL);
+    Odometry::valueBL = digitalRead(CHAN_BL);
+    Odometry::valueAR = digitalRead(CHAN_AR);
+    Odometry::valueBR = digitalRead(CHAN_BR);
 
     attachInterrupt(digitalPinToInterrupt(CHAN_AL), Odometry::onTickChanALeft, CHANGE);
     attachInterrupt(digitalPinToInterrupt(CHAN_BL), Odometry::onTickChanBLeft, CHANGE);
     attachInterrupt(digitalPinToInterrupt(CHAN_AR), Odometry::onTickChanARight, CHANGE);
     attachInterrupt(digitalPinToInterrupt(CHAN_BR), Odometry::onTickChanBRight, CHANGE);
-
 
 }
 
@@ -43,36 +44,40 @@ long Odometry::getRightValue() {
 void Odometry::onTickChanALeft(void)
 {
     valueAL = digitalRead(CHAN_AL);
-    if(valueAL == valueBL)
-    {
-        --leftTicks;
-    }
-}
 
-void Odometry::onTickChanBLeft(void)
-{
-    valueBL = digitalRead(CHAN_BL);
     if(valueAL == valueBL)
     {
         ++leftTicks;
     }
 }
 
+void Odometry::onTickChanBLeft(void)
+{
+    valueBL = digitalRead(CHAN_BL);
+
+    if(valueAL == valueBL)
+    {
+        --leftTicks;
+    }
+}
+
 void Odometry::onTickChanARight(void)
 {
     valueAR = digitalRead(CHAN_AR);
+
     if(valueAR == valueBR)
     {
-        --rightTicks;
+        ++rightTicks;
     }
 }
 
 void Odometry::onTickChanBRight(void)
 {
     valueBR = digitalRead(CHAN_BR);
+
     if(valueAR == valueBR)
     {
-        ++rightTicks;
+        --rightTicks;
     }
 }
 

@@ -9,7 +9,7 @@
 
 MotionController* motion;
 
-LinkedResponseList* responses = nullptr;
+LinkedResponseList* responses = 0;
 
 char *buffer;
 volatile unsigned short pos = 0;
@@ -208,12 +208,11 @@ void setup()
 {
     Serial.begin(115200);
 
+    Serial.println("UP");
+    
     motion = new MotionController();
 
     motion->init();
-
-    responses = static_cast<LinkedResponseList *>(malloc(sizeof(LinkedResponseList)));
-    responses->resultID = 0;
 
     //Timer1.attachInterrupt(motionControllerWrapper).setFrequency(1000).start();
 

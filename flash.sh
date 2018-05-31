@@ -1,2 +1,2 @@
 sync
-bossac-udoo -e -w -v -b -R -p ttymxc3 firmware.bin
+avrdude -p m2560 -c usbasp -F -U flash:w:.pioenvs/megaatmega2560/firmware.hex

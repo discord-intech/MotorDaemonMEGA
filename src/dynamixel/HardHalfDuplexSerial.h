@@ -121,7 +121,7 @@ public:
 #endif
 */
 #if defined (HAVE_HWSERIAL1) || (ID_USART0)
-  extern hardHalfDuplexSerial hdSerial1;
+  //extern hardHalfDuplexSerial hdSerial1;
 #endif
 
 #if defined (HAVE_HWSERIAL2) || (ID_USART1)
