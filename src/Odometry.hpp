@@ -12,8 +12,8 @@
 #define CHAN_AR 20
 #define CHAN_BR 21
 
-#define MM_PER_TICK (1.4211*2.0)
-#define TICKS_TO_RAD (0.00189/2.0)
+#define MM_PER_TICK (1.4211)
+#define TICKS_TO_RAD (0.00189)
 
 class Odometry {
 

@@ -85,7 +85,7 @@ averageLeftSpeed(), averageRightSpeed(), odo()
 
     toleranceDifferentielle = 500; // Pour les trajectoires "normales", v�rifie que les roues ne font pas nawak chacunes de leur cot�.
 
-    translationPID.setTunings(0,0,0);
+    translationPID.setTunings(1,0,0);
     leftSpeedPID.setTunings(0.2,0.0001,0);
     rightSpeedPID.setTunings(0.2,0.0001,0);
     curvePID.setTunings(0,0,0);
